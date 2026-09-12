@@ -1,0 +1,170 @@
+--- GET / 
+200
+{"message":"Task Manager API","version":"1.0"}
+
+--- GET /health 
+200
+{"status":"ok","timestamp":"<TS>"}
+
+--- GET /tasks 
+200
+[{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Adicionar autentica\u00e7\u00e3o real com JWT","due_date":"<TS>","id":1,"overdue":true,"priority":1,"status":"pending","tags":[],"title":"Implementar autentica\u00e7\u00e3o JWT","updated_at":"<TS>","user_id":1,"user_name":"Jo\u00e3o Silva"},{"category_id":2,"category_name":"Frontend","created_at":"<TS>","description":"Tela de login responsiva","due_date":"<TS>","id":2,"overdue":false,"priority":2,"status":"in_progress","tags":[],"title":"Criar tela de login","updated_at":"<TS>","user_id":2,"user_name":"Maria Santos"},{"category_id":3,"category_name":"DevOps","created_at":"<TS>","description":"Pipeline com GitHub Actions","due_date":null,"id":3,"overdue":false,"priority":2,"status":"done","tags":["devops","ci","github"],"title":"Configurar CI/CD","updated_at":"<TS>","user_id":3,"user_name":"Pedro Oliveira"},{"category_id":4,"category_name":"Bug","created_at":"<TS>","description":"Filtro n\u00e3o funciona com caracteres especiais","due_date":"<TS>","id":4,"overdue":true,"priority":1,"status":"pending","tags":[],"title":"Corrigir bug no filtro de busca","updated_at":"<TS>","user_id":1,"user_name":"Jo\u00e3o Silva"},{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Endpoints retornam todos os registros","due_date":"<TS>","id":5,"overdue":false,"priority":3,"status":"pending","tags":[],"title":"Adicionar pagina\u00e7\u00e3o na API","updated_at":"<TS>","user_id":1,"user_name":"Jo\u00e3o Silva"},{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Cobertura m\u00ednima de 80%","due_date":null,"id":6,"overdue":false,"priority":2,"status":"pending","tags":[],"title":"Escrever testes unit\u00e1rios","updated_at":"<TS>","user_id":2,"user_name":"Maria Santos"},{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Gerar documenta\u00e7\u00e3o autom\u00e1tica","due_date":null,"id":7,"overdue":false,"priority":4,"status":"cance
+--- GET /tasks/1 
+200
+{"category_id":1,"created_at":"<TS>","description":"Adicionar autentica\u00e7\u00e3o real com JWT","due_date":"<TS>","id":1,"overdue":true,"priority":1,"status":"pending","tags":[],"title":"Implementar autentica\u00e7\u00e3o JWT","updated_at":"<TS>","user_id":1}
+
+--- GET /tasks/9999 
+404
+{"error":"Task n\u00e3o encontrada"}
+
+--- POST /tasks 
+201
+{"category_id":1,"created_at":"<TS>","description":"criada pelo smoke","due_date":"<TS>","id":11,"priority":2,"status":"pending","tags":["smoke","teste"],"title":"Task de smoke test","updated_at":"<TS>","user_id":1}
+
+--- POST /tasks 
+400
+{"error":"T\u00edtulo muito curto"}
+
+--- POST /tasks 
+400
+{"error":"Status inv\u00e1lido"}
+
+--- POST /tasks 
+500
+<!doctype html>
+<html lang=en>
+<title>500 Internal Server Error</title>
+<h1>Internal Server Error</h1>
+<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>
+
+--- POST /tasks 
+404
+{"error":"Usu\u00e1rio n\u00e3o encontrado"}
+
+--- PUT /tasks/11 
+200
+{"category_id":1,"created_at":"<TS>","description":"criada pelo smoke","due_date":"<TS>","id":11,"priority":1,"status":"in_progress","tags":["smoke","teste"],"title":"Task de smoke test editada","updated_at":"<TS>","user_id":1}
+
+--- PUT /tasks/9999 
+404
+{"error":"Task n\u00e3o encontrada"}
+
+--- DELETE /tasks/11 
+200
+{"message":"Task deletada com sucesso"}
+
+--- DELETE /tasks/9999 
+404
+{"error":"Task n\u00e3o encontrada"}
+
+--- GET /tasks/search?q=API 
+200
+[{"category_id":1,"created_at":"<TS>","description":"Endpoints retornam todos os registros","due_date":"<TS>","id":5,"priority":3,"status":"pending","tags":[],"title":"Adicionar pagina\u00e7\u00e3o na API","updated_at":"<TS>","user_id":1},{"category_id":1,"created_at":"<TS>","description":"Gerar documenta\u00e7\u00e3o autom\u00e1tica","due_date":null,"id":7,"priority":4,"status":"cancelled","tags":[],"title":"Documentar API com Swagger","updated_at":"<TS>","user_id":3}]
+
+--- GET /tasks/search?status=done 
+200
+[{"category_id":3,"created_at":"<TS>","description":"Pipeline com GitHub Actions","due_date":null,"id":3,"priority":2,"status":"done","tags":["devops","ci","github"],"title":"Configurar CI/CD","updated_at":"<TS>","user_id":3}]
+
+--- GET /tasks/search?priority=abc 
+500
+<!doctype html>
+<html lang=en>
+<title>500 Internal Server Error</title>
+<h1>Internal Server Error</h1>
+<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>
+
+--- GET /tasks/stats 
+200
+{"cancelled":1,"completion_rate":10.0,"done":1,"in_progress":2,"overdue":2,"pending":6,"total":10}
+
+--- GET /users 
+200
+[{"active":true,"created_at":"<TS>","email":"joao@email.com","id":1,"name":"Jo\u00e3o Silva","role":"admin","task_count":4},{"active":true,"created_at":"<TS>","email":"maria@email.com","id":2,"name":"Maria Santos","role":"user","task_count":3},{"active":true,"created_at":"<TS>","email":"pedro@email.com","id":3,"name":"Pedro Oliveira","role":"manager","task_count":3}]
+
+--- GET /users/1 
+200
+{"active":true,"created_at":"<TS>","email":"joao@email.com","id":1,"name":"Jo\u00e3o Silva","password":"81dc9bdb52d04dc20036dbd8313ed055","role":"admin","tasks":[{"category_id":1,"created_at":"<TS>","description":"Adicionar autentica\u00e7\u00e3o real com JWT","due_date":"<TS>","id":1,"priority":1,"status":"pending","tags":[],"title":"Implementar autentica\u00e7\u00e3o JWT","updated_at":"<TS>","user_id":1},{"category_id":4,"created_at":"<TS>","description":"Filtro n\u00e3o funciona com caracteres especiais","due_date":"<TS>","id":4,"priority":1,"status":"pending","tags":[],"title":"Corrigir bug no filtro de busca","updated_at":"<TS>","user_id":1},{"category_id":1,"created_at":"<TS>","description":"Endpoints retornam todos os registros","due_date":"<TS>","id":5,"priority":3,"status":"pending","tags":[],"title":"Adicionar pagina\u00e7\u00e3o na API","updated_at":"<TS>","user_id":1},{"category_id":1,"created_at":"<TS>","description":"Usar marshmallow ou pydantic","due_date":null,"id":10,"priority":3,"status":"pending","tags":["improvement","validation"],"title":"Melhorar valida\u00e7\u00f5es de input","updated_at":"<TS>","user_id":1}]}
+
+--- GET /users/9999 
+404
+{"error":"Usu\u00e1rio n\u00e3o encontrado"}
+
+--- POST /users 
+201
+{"active":true,"created_at":"<TS>","email":"carlos@email.com","id":4,"name":"Carlos Smoke","password":"40847951488f9395f242f30ed27cdc47","role":"user"}
+
+--- POST /users 
+409
+{"error":"Email j\u00e1 cadastrado"}
+
+--- POST /users 
+400
+{"error":"Email inv\u00e1lido"}
+
+--- PUT /users/4 
+200
+{"active":true,"created_at":"<TS>","email":"carlos@email.com","id":4,"name":"Carlos Editado","password":"40847951488f9395f242f30ed27cdc47","role":"manager"}
+
+--- DELETE /users/4 
+200
+{"message":"Usu\u00e1rio deletado com sucesso"}
+
+--- GET /users/1/tasks 
+200
+[{"created_at":"<TS>","description":"Adicionar autentica\u00e7\u00e3o real com JWT","due_date":"<TS>","id":1,"overdue":true,"priority":1,"status":"pending","title":"Implementar autentica\u00e7\u00e3o JWT"},{"created_at":"<TS>","description":"Filtro n\u00e3o funciona com caracteres especiais","due_date":"<TS>","id":4,"overdue":true,"priority":1,"status":"pending","title":"Corrigir bug no filtro de busca"},{"created_at":"<TS>","description":"Endpoints retornam todos os registros","due_date":"<TS>","id":5,"overdue":false,"priority":3,"status":"pending","title":"Adicionar pagina\u00e7\u00e3o na API"},{"created_at":"<TS>","description":"Usar marshmallow ou pydantic","due_date":null,"id":10,"overdue":false,"priority":3,"status":"pending","title":"Melhorar valida\u00e7\u00f5es de input"}]
+
+--- POST /login 
+200
+{"message":"Login realizado com sucesso","token":"fake-jwt-token-1","user":{"active":true,"created_at":"<TS>","email":"joao@email.com","id":1,"name":"Jo\u00e3o Silva","password":"81dc9bdb52d04dc20036dbd8313ed055","role":"admin"}}
+
+--- POST /login 
+401
+{"error":"Credenciais inv\u00e1lidas"}
+
+--- GET /reports/summary 
+200
+{"generated_at":"<TS>","overdue":{"count":2,"tasks":[{"days_overdue":3,"due_date":"<TS>","id":1,"title":"Implementar autentica\u00e7\u00e3o JWT"},{"days_overdue":1,"due_date":"<TS>","id":4,"title":"Corrigir bug no filtro de busca"}]},"overview":{"total_categories":4,"total_tasks":10,"total_users":3},"recent_activity":{"tasks_completed_last_7_days":1,"tasks_created_last_7_days":10},"tasks_by_priority":{"critical":2,"high":3,"low":2,"medium":3,"minimal":0},"tasks_by_status":{"cancelled":1,"done":1,"in_progress":2,"pending":6},"user_productivity":[{"completed_tasks":0,"completion_rate":0.0,"total_tasks":4,"user_id":1,"user_name":"Jo\u00e3o Silva"},{"completed_tasks":0,"completion_rate":0.0,"total_tasks":3,"user_id":2,"user_name":"Maria Santos"},{"completed_tasks":1,"completion_rate":33.33,"total_tasks":3,"user_id":3,"user_name":"Pedro Oliveira"}]}
+
+--- GET /reports/user/1 
+200
+{"statistics":{"cancelled":0,"completion_rate":0.0,"done":0,"high_priority":2,"in_progress":0,"overdue":2,"pending":4,"total_tasks":4},"user":{"email":"joao@email.com","id":1,"name":"Jo\u00e3o Silva"}}
+
+--- GET /reports/user/9999 
+404
+{"error":"Usu\u00e1rio n\u00e3o encontrado"}
+
+--- GET /categories 
+200
+[{"color":"#3498db","created_at":"<TS>","description":"Tarefas de backend","id":1,"name":"Backend","task_count":6},{"color":"#2ecc71","created_at":"<TS>","description":"Tarefas de frontend","id":2,"name":"Frontend","task_count":1},{"color":"#e74c3c","created_at":"<TS>","description":"Tarefas de infraestrutura","id":3,"name":"DevOps","task_count":2},{"color":"#e67e22","created_at":"<TS>","description":"Corre\u00e7\u00e3o de bugs","id":4,"name":"Bug","task_count":1}]
+
+--- POST /categories 
+201
+{"color":"#123456","created_at":"<TS>","description":"categoria de teste","id":5,"name":"Smoke"}
+
+--- POST /categories 
+400
+{"error":"Nome \u00e9 obrigat\u00f3rio"}
+
+--- POST /categories 
+201
+{"color":"azul","created_at":"<TS>","description":"","id":6,"name":"Cor invalida"}
+
+--- PUT /categories/5 
+200
+{"color":"#123456","created_at":"<TS>","description":"categoria de teste","id":5,"name":"Smoke Editada"}
+
+--- DELETE /categories/5 
+200
+{"message":"Categoria deletada"}
+
+--- PUT /categories/9999 
+404
+{"error":"Categoria n\u00e3o encontrada"}
+
+--- GET /tasks (sem token)
+200
+[{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Adicionar autentica\u00e7\u00e3o real com JWT","due_date":"<TS>","id":1,"overdue":true,"priority":1,"status":"pending","tags":[],"title":"Implementar autentica\u00e7\u00e3o JWT","updated_at":"<TS>","user_id":1,"user_name":"Jo\u00e3o Silva"},{"category_id":2,"category_name":"Frontend","created_at":"<TS>","description":"Tela de login responsiva","due_date":"<TS>","id":2,"overdue":false,"priority":2,"status":"in_progress","tags":[],"title":"Criar tela de login","updated_at":"<TS>","user_id":2,"user_name":"Maria Santos"},{"category_id":3,"category_name":"DevOps","created_at":"<TS>","description":"Pipeline com GitHub Actions","due_date":null,"id":3,"overdue":false,"priority":2,"status":"done","tags":["devops","ci","github"],"title":"Configurar CI/CD","updated_at":"<TS>","user_id":3,"user_name":"Pedro Oliveira"},{"category_id":4,"category_name":"Bug","created_at":"<TS>","description":"Filtro n\u00e3o funciona com caracteres especiais","due_date":"<TS>","id":4,"overdue":true,"priority":1,"status":"pending","tags":[],"title":"Corrigir bug no filtro de busca","updated_at":"<TS>","user_id":1,"user_name":"Jo\u00e3o Silva"},{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Endpoints retornam todos os registros","due_date":"<TS>","id":5,"overdue":false,"priority":3,"status":"pending","tags":[],"title":"Adicionar pagina\u00e7\u00e3o na API","updated_at":"<TS>","user_id":1,"user_name":"Jo\u00e3o Silva"},{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Cobertura m\u00ednima de 80%","due_date":null,"id":6,"overdue":false,"priority":2,"status":"pending","tags":[],"title":"Escrever testes unit\u00e1rios","updated_at":"<TS>","user_id":2,"user_name":"Maria Santos"},{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Gerar documenta\u00e7\u00e3o autom\u00e1tica","due_date":null,"id":7,"overdue":false,"priority":4,"status":"cance
+--- GET /reports/summary (sem token)
+200
+{"generated_at":"<TS>","overdue":{"count":2,"tasks":[{"days_overdue":3,"due_date":"<TS>","id":1,"title":"Implementar autentica\u00e7\u00e3o JWT"},{"days_overdue":1,"due_date":"<TS>","id":4,"title":"Corrigir bug no filtro de busca"}]},"overview":{"total_categories":5,"total_tasks":10,"total_users":3},"recent_activity":{"tasks_completed_last_7_days":1,"tasks_created_last_7_days":10},"tasks_by_priority":{"critical":2,"high":3,"low":2,"medium":3,"minimal":0},"tasks_by_status":{"cancelled":1,"done":1,"in_progress":2,"pending":6},"user_productivity":[{"completed_tasks":0,"completion_rate":0.0,"total_tasks":4,"user_id":1,"user_name":"Jo\u00e3o Silva"},{"completed_tasks":0,"completion_rate":0.0,"total_tasks":3,"user_id":2,"user_name":"Maria Santos"},{"completed_tasks":1,"completion_rate":33.33,"total_tasks":3,"user_id":3,"user_name":"Pedro Oliveira"}]}
+

@@ -1,48 +1,56 @@
+"""Notificações.
+
+Antes esta classe tinha as credenciais de SMTP no construtor (host, usuário e senha literais),
+guardava as notificações em uma lista de instância e nunca era chamada por rota nenhuma.
+
+Agora as credenciais vêm da configuração, o envio é opcional (sem SMTP configurado a notificação
+só é registrada em log) e o serviço é injetado no TaskService pelo composition root.
+"""
+import logging
 import smtplib
-from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
 
 class NotificationService:
-    def __init__(self):
-        self.notifications = []
-        self.email_host = 'smtp.gmail.com'
-        self.email_port = 587
-        self.email_user = 'taskmanager@gmail.com'
-        self.email_password = 'senha123'
+    def __init__(self, config):
+        self.config = config
 
-    def send_email(self, to, subject, body):
-        try:
+    @property
+    def habilitado(self):
+        return bool(self.config.SMTP_HOST and self.config.SMTP_USER)
 
-            server = smtplib.SMTP(self.email_host, self.email_port)
-            server.starttls()
-            server.login(self.email_user, self.email_password)
-            message = f"Subject: {subject}\n\n{body}"
-            server.sendmail(self.email_user, to, message)
-            server.quit()
-            print(f"Email enviado para {to}")
-            return True
-        except Exception as e:
-            print(f"Erro ao enviar email: {str(e)}")
+    def notificar_task_atribuida(self, usuario, tarefa):
+        assunto = f"Nova task atribuída: {tarefa.title}"
+        corpo = (
+            f"Olá {usuario.name},\n\n"
+            f"A task '{tarefa.title}' foi atribuída a você.\n\n"
+            f"Prioridade: {tarefa.priority}\nStatus: {tarefa.status}"
+        )
+        self._enviar(usuario.email, assunto, corpo, evento="task_assigned", task_id=tarefa.id)
+
+    def notificar_task_atrasada(self, usuario, tarefa):
+        assunto = f"Task atrasada: {tarefa.title}"
+        corpo = (
+            f"Olá {usuario.name},\n\n"
+            f"A task '{tarefa.title}' está atrasada!\n\nData limite: {tarefa.due_date}"
+        )
+        self._enviar(usuario.email, assunto, corpo, evento="task_overdue", task_id=tarefa.id)
+
+    def _enviar(self, destinatario, assunto, corpo, evento, task_id):
+        if not self.habilitado:
+            logger.info("notificação registrada (SMTP desativado)", extra={"evento": evento, "task_id": task_id})
             return False
-
-    def notify_task_assigned(self, user, task):
-        subject = f"Nova task atribuída: {task.title}"
-        body = f"Olá {user.name},\n\nA task '{task.title}' foi atribuída a você.\n\nPrioridade: {task.priority}\nStatus: {task.status}"
-        self.send_email(user.email, subject, body)
-        self.notifications.append({
-            'type': 'task_assigned',
-            'user_id': user.id,
-            'task_id': task.id,
-            'timestamp': datetime.utcnow()
-        })
-
-    def notify_task_overdue(self, user, task):
-        subject = f"Task atrasada: {task.title}"
-        body = f"Olá {user.name},\n\nA task '{task.title}' está atrasada!\n\nData limite: {task.due_date}"
-        self.send_email(user.email, subject, body)
-
-    def get_notifications(self, user_id):
-        result = []
-        for n in self.notifications:
-            if n['user_id'] == user_id:
-                result.append(n)
-        return result
+        try:
+            with smtplib.SMTP(self.config.SMTP_HOST, self.config.SMTP_PORT) as servidor:
+                servidor.starttls()
+                servidor.login(self.config.SMTP_USER, self.config.SMTP_PASSWORD)
+                servidor.sendmail(
+                    self.config.SMTP_USER, destinatario, f"Subject: {assunto}\n\n{corpo}"
+                )
+            logger.info("notificação enviada", extra={"evento": evento, "task_id": task_id})
+            return True
+        except (smtplib.SMTPException, OSError) as erro:
+            # Exceção específica e log com contexto — antes era `except Exception` com print.
+            logger.warning("falha ao enviar notificação: %s", erro, extra={"evento": evento})
+            return False

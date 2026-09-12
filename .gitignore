@@ -10,3 +10,7 @@ venv/
 # SQLite
 *.db
 instance/
+
+# Ferramentas
+.pytest_cache/
+.DS_Store

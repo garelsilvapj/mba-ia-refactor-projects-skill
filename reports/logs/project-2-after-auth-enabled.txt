@@ -2,8 +2,8 @@
 200
 [{"course":"Clean Architecture","revenue":997,"students":[{"student":"Leonan","paid":997}]},{"course":"Docker","revenue":0,"students":[]}]
 --- GET /api/admin/financial-report 
-200
-[{"course":"Clean Architecture","revenue":997,"students":[{"student":"Leonan","paid":997}]},{"course":"Docker","revenue":0,"students":[]}]
+401
+{"error":"Credencial de administrador inválida"}
 --- POST /api/checkout 
 200
 {"msg":"Sucesso","enrollment_id":2}

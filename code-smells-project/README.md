@@ -62,16 +62,19 @@ service conhece `request`/`jsonify`.
 | GET | `/pedidos/usuario/<id>` | pedidos de um usuário |
 | PUT | `/pedidos/<id>/status` | atualiza status |
 | GET | `/relatorios/vendas` | relatório de vendas |
+| POST | `/admin/reset-db` | esvazia as tabelas (credencial opcional) |
+| POST | `/admin/query` | retirada por segurança, responde 410 |
 
 ## Mudanças de comportamento intencionais
 
-Correções de segurança e de corretude aplicadas na Fase 3. Todo o resto responde exatamente
-como antes (ver `reports/logs/project-1-before.txt` e `-after.txt`).
+Correções de segurança e de corretude aplicadas na Fase 3. **Todas as 19 rotas originais
+continuam registradas e respondendo**; o resto responde exatamente como antes (ver
+`reports/logs/project-1-before.txt` e `-after.txt`).
 
 | Antes | Agora |
 |---|---|
-| `POST /admin/query` executava SQL arbitrário sem auth | endpoint removido (404) |
-| `POST /admin/reset-db` apagava o banco sem auth | endpoint removido (404) |
+| `POST /admin/query` executava SQL arbitrário sem auth | rota responde 410 com a explicação |
+| `POST /admin/reset-db` apagava o banco sem auth | segue funcionando; com `ADMIN_TOKEN` exige credencial |
 | login com `' OR '1'='1` autenticava como admin (200) | 401 |
 | busca com payload de injeção devolvia 500 com erro do SQLite | 200, texto tratado como literal |
 | `GET /usuarios` devolvia o campo `senha` em texto puro | campo não existe mais na resposta |

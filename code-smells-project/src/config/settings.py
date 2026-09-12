@@ -40,6 +40,10 @@ class Config:
         if origem.strip()
     ]
 
+    # Credencial das rotas administrativas. Vazio: elas respondem como no comportamento
+    # original. Preenchido: passam a exigir o cabeçalho X-Admin-Token.
+    ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
+
     VERSAO = "1.0.0"
 
     # --- constantes de domínio (antes eram magic numbers espalhados) ---

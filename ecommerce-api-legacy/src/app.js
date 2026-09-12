@@ -73,7 +73,10 @@ async function createApp({ db, gateway } = {}) {
   await popularDadosIniciais(conexao, hasher.gerarHash);
 
   if (!config.adminToken) {
-    logger.warn('ADMIN_TOKEN não configurado: rotas administrativas ficarão indisponíveis');
+    logger.warn(
+      'ADMIN_TOKEN não configurado: rotas administrativas seguem abertas (contrato original). '
+      + 'Defina ADMIN_TOKEN no .env para exigir o cabeçalho X-Admin-Token.',
+    );
   }
 
   const app = express();

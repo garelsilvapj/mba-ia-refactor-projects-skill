@@ -23,8 +23,10 @@ Usuários do seed: `joao@email.com` / `1234` (admin), `maria@email.com` / `abcd`
 
 ## Autenticação
 
-O login devolve um token assinado. As rotas protegidas exigem o cabeçalho
-`Authorization: Bearer <token>`.
+O login devolve um token assinado, com validade. A **exigência** do token é opcional: por
+padrão (`REQUIRE_AUTH=false`) a API responde exatamente como antes da refatoração, e todos os
+22 endpoints continuam acessíveis. Definindo `REQUIRE_AUTH=true` no `.env`, as rotas protegidas
+passam a exigir o cabeçalho `Authorization: Bearer <token>`.
 
 ```bash
 TOKEN=$(curl -s -X POST localhost:5000/login -H 'Content-Type: application/json' \
@@ -32,6 +34,8 @@ TOKEN=$(curl -s -X POST localhost:5000/login -H 'Content-Type: application/json'
 
 curl -H "Authorization: Bearer $TOKEN" localhost:5000/tasks
 ```
+
+Com `REQUIRE_AUTH=true`:
 
 | Acesso | Rotas |
 |---|---|
@@ -61,11 +65,11 @@ utils/
 ## Mudanças de comportamento intencionais
 
 Comparação completa em `reports/logs/project-3-before.txt` e `-after.txt`: das 41 requisições do
-smoke test, 28 respondem exatamente como antes.
+smoke test, **41 respondem** e 29 são idênticas ao comportamento anterior.
 
 | Antes | Agora |
 |---|---|
-| todas as 22 rotas eram públicas | rotas protegidas respondem 401 sem token |
+| não havia autenticação possível | com `REQUIRE_AUTH=true`, as rotas protegidas exigem token |
 | login devolvia `fake-jwt-token-<id>` | token assinado com a SECRET_KEY, com validade |
 | respostas de usuário e de login traziam o hash da senha | campo removido da serialização |
 | senhas em MD5 sem salt | hash forte do werkzeug (scrypt) |
@@ -73,7 +77,7 @@ smoke test, 28 respondem exatamente como antes.
 | `GET /tasks/search?priority=abc` causava 500 | 400 |
 | categoria aceitava qualquer cor | 400 para cor fora do formato `#RRGGBB` |
 | erro de validação trazia só `error` | mesmo `error`, mais um campo `details` por campo |
-| cadastro público podia escolher o próprio papel | papel só é aceito de um admin autenticado |
+| cadastro público podia escolher o próprio papel | com `REQUIRE_AUTH=true`, o papel só é aceito de um admin |
 
 ## Melhorias sem mudança de contrato
 

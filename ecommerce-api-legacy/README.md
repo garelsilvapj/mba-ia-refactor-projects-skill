@@ -7,15 +7,15 @@ LMS API com fluxo de checkout, em Node.js/Express, **refatorada para MVC** pela 
 
 ```bash
 npm install
-cp .env.example .env        # defina ADMIN_TOKEN para habilitar as rotas administrativas
 npm start
 ```
 
 A aplicação sobe em `http://localhost:3000`. O banco SQLite continua em memória e é populado no
 boot. Exemplos de requisições em `api.http`.
 
-Sem `ADMIN_TOKEN` a aplicação sobe normalmente e o checkout funciona, mas as rotas
-administrativas respondem 403 — segredo ausente desabilita o recurso em vez de liberá-lo.
+Sem configuração alguma, os três endpoints respondem como antes e o `api.http` funciona. Para
+proteger as rotas administrativas, copie `.env.example` para `.env` e defina `ADMIN_TOKEN`:
+a partir daí elas exigem o cabeçalho `X-Admin-Token`.
 
 ## Estrutura
 
@@ -53,8 +53,8 @@ gateway falsos.
 | Método | Rota | Autenticação | Descrição |
 |---|---|---|---|
 | POST | `/api/checkout` | senha do usuário, se o e-mail já existir | matrícula + pagamento |
-| GET | `/api/admin/financial-report` | `X-Admin-Token` | receita e alunos por curso |
-| DELETE | `/api/users/:id` | `X-Admin-Token` | remove usuário |
+| GET | `/api/admin/financial-report` | `X-Admin-Token`, se `ADMIN_TOKEN` estiver definido | receita e alunos por curso |
+| DELETE | `/api/users/:id` | `X-Admin-Token`, se `ADMIN_TOKEN` estiver definido | remove usuário |
 
 ## Mudanças de comportamento intencionais
 
@@ -63,7 +63,7 @@ Correções aplicadas na Fase 3 (comparação completa em `reports/logs/project-
 
 | Antes | Agora |
 |---|---|
-| relatório financeiro e exclusão de usuário eram públicos | exigem `X-Admin-Token` (401 sem credencial) |
+| não havia como proteger o relatório financeiro nem a exclusão de usuário | proteção disponível: com `ADMIN_TOKEN` definido, exigem `X-Admin-Token` |
 | checkout com e-mail existente ignorava a senha | 401 quando a senha não confere |
 | `DELETE /api/users/999` devolvia 200 | 404, com verificação de linhas afetadas |
 | erros respondiam texto puro | JSON `{"error": "..."}` com a mesma mensagem |

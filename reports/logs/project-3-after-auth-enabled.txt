@@ -107,7 +107,7 @@
 
 --- POST /login 
 200
-{"message":"Login realizado com sucesso","token":"eyJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4ifQ.aqSlhQ.mpnwYc7iaTvbV6wXpnkmY1sXbj0","user":{"active":true,"created_at":"<TS>","email":"joao@email.com","id":1,"name":"Jo\u00e3o Silva","role":"admin"}}
+{"message":"Login realizado com sucesso","token":"eyJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4ifQ.aqSlkg.wob6nQXXRyPlU7G4FrXqK5qukBg","user":{"active":true,"created_at":"<TS>","email":"joao@email.com","id":1,"name":"Jo\u00e3o Silva","role":"admin"}}
 
 --- POST /login 
 401
@@ -154,9 +154,10 @@
 {"error":"Categoria n\u00e3o encontrada"}
 
 --- GET /tasks (sem token)
-200
-[{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Adicionar autentica\u00e7\u00e3o real com JWT","due_date":"<TS>","id":1,"overdue":true,"priority":1,"status":"pending","tags":[],"title":"Implementar autentica\u00e7\u00e3o JWT","updated_at":"<TS>","user_id":1,"user_name":"Jo\u00e3o Silva"},{"category_id":2,"category_name":"Frontend","created_at":"<TS>","description":"Tela de login responsiva","due_date":"<TS>","id":2,"overdue":false,"priority":2,"status":"in_progress","tags":[],"title":"Criar tela de login","updated_at":"<TS>","user_id":2,"user_name":"Maria Santos"},{"category_id":3,"category_name":"DevOps","created_at":"<TS>","description":"Pipeline com GitHub Actions","due_date":null,"id":3,"overdue":false,"priority":2,"status":"done","tags":["devops","ci","github"],"title":"Configurar CI/CD","updated_at":"<TS>","user_id":3,"user_name":"Pedro Oliveira"},{"category_id":4,"category_name":"Bug","created_at":"<TS>","description":"Filtro n\u00e3o funciona com caracteres especiais","due_date":"<TS>","id":4,"overdue":true,"priority":1,"status":"pending","tags":[],"title":"Corrigir bug no filtro de busca","updated_at":"<TS>","user_id":1,"user_name":"Jo\u00e3o Silva"},{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Endpoints retornam todos os registros","due_date":"<TS>","id":5,"overdue":false,"priority":3,"status":"pending","tags":[],"title":"Adicionar pagina\u00e7\u00e3o na API","updated_at":"<TS>","user_id":1,"user_name":"Jo\u00e3o Silva"},{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Cobertura m\u00ednima de 80%","due_date":null,"id":6,"overdue":false,"priority":2,"status":"pending","tags":[],"title":"Escrever testes unit\u00e1rios","updated_at":"<TS>","user_id":2,"user_name":"Maria Santos"},{"category_id":1,"category_name":"Backend","created_at":"<TS>","description":"Gerar documenta\u00e7\u00e3o autom\u00e1tica","due_date":null,"id":7,"overdue":false,"priority":4,"status":"cance
+401
+{"error":"Token de autentica\u00e7\u00e3o ausente"}
+
 --- GET /reports/summary (sem token)
-200
-{"generated_at":"<TS>","overdue":{"count":2,"tasks":[{"days_overdue":3,"due_date":"<TS>","id":1,"title":"Implementar autentica\u00e7\u00e3o JWT"},{"days_overdue":1,"due_date":"<TS>","id":4,"title":"Corrigir bug no filtro de busca"}]},"overview":{"total_categories":4,"total_tasks":10,"total_users":3},"recent_activity":{"tasks_completed_last_7_days":1,"tasks_created_last_7_days":10},"tasks_by_priority":{"critical":2,"high":3,"low":2,"medium":3,"minimal":0},"tasks_by_status":{"cancelled":1,"done":1,"in_progress":2,"pending":6},"user_productivity":[{"completed_tasks":0,"completion_rate":0.0,"total_tasks":4,"user_id":1,"user_name":"Jo\u00e3o Silva"},{"completed_tasks":0,"completion_rate":0.0,"total_tasks":3,"user_id":2,"user_name":"Maria Santos"},{"completed_tasks":1,"completion_rate":33.33,"total_tasks":3,"user_id":3,"user_name":"Pedro Oliveira"}]}
+401
+{"error":"Token de autentica\u00e7\u00e3o ausente"}
 

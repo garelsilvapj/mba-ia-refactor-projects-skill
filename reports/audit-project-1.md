@@ -49,8 +49,9 @@ Description: `POST /admin/reset-db` executa `DELETE` nas quatro tabelas e faz co
 autenticação, confirmação ou trilha de auditoria. Confirmado na execução: devolve 200 e
 esvazia a base.
 Impact: perda total dos dados de produção por uma única requisição anônima.
-Recommendation: remover o endpoint. Reset de base é tarefa de administração operacional, não
-de rota HTTP pública.
+Recommendation: remover o endpoint ou, se ele for necessário em desenvolvimento, exigir
+credencial de administrador e registrar auditoria. Reset de base não pode ser uma rota
+pública.
 
 ### [CRITICAL] SQL Injection em toda a camada de dados
 File: models.py:28
@@ -260,15 +261,14 @@ Impact: código morto confunde quem chega depois; o cliente precisa de tratament
 rota.
 Recommendation: remover os imports não usados e padronizar o envelope de resposta e de erro.
 
-### [INFO] Varredura de APIs deprecated
-File: (nenhuma ocorrência)
-Description: a varredura do catálogo (AP-15) não encontrou nenhuma API deprecated neste projeto:
-não há `datetime.utcnow()`, `@app.before_first_request`, `hashlib.md5`, `Query.get()` legado nem
-`flask.Markup`. Registrado para documentar que a verificação foi executada.
-Impact: nenhum.
-Recommendation: nenhuma ação. Observação de estilo: o registro de rotas por `add_url_rule` com
-funções soltas (app.py:11-30) é o padrão pré-Blueprint, desencorajado pela documentação atual do
-Flask, e será substituído por Blueprints na Fase 3.
+================================
+Deprecated API scan: nenhuma ocorrência
+  Verificados: datetime.utcnow(), @app.before_first_request, hashlib.md5/sha1,
+  Query.get() legado, flask.Markup, app.json_encoder. Nenhum uso encontrado neste projeto.
+  Observação de estilo: o registro de rotas por add_url_rule com funções soltas
+  (app.py:11-30) é o padrão pré-Blueprint, desencorajado pela documentação atual do Flask,
+  e foi substituído por Blueprints na Fase 3.
+================================
 
 ================================
 Total: 22 findings

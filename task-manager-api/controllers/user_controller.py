@@ -1,5 +1,5 @@
 """Controller de usuários e login."""
-from flask import g, jsonify, request
+from flask import current_app, g, jsonify, request
 
 from schemas import LoginSchema, UserCreateSchema, UserUpdateSchema
 
@@ -21,9 +21,12 @@ class UserController:
 
     def criar(self):
         dados = self.schema_criacao.carregar(request.get_json(silent=True))
-        # Só um administrador autenticado escolhe o papel do novo usuário.
+        # Com autenticação ativa, só um administrador escolhe o papel do novo usuário.
+        # Com ela desligada, o comportamento original (papel livre no cadastro) é preservado.
         solicitante = getattr(g, "usuario", None)
-        pode_definir_papel = solicitante is not None and solicitante.is_admin()
+        pode_definir_papel = not current_app.config.get("REQUIRE_AUTH", False) or (
+            solicitante is not None and solicitante.is_admin()
+        )
         return jsonify(self.users.criar(dados, papel_permitido=pode_definir_papel)), 201
 
     def atualizar(self, user_id):

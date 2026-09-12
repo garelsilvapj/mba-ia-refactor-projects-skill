@@ -2,9 +2,11 @@
 
 Antes: as rotas eram declaradas com `add_url_rule` em app.py:11-30 (estilo pré-Blueprint) e
 três handlers estavam implementados dentro do próprio app.py, incluindo os dois endpoints
-administrativos removidos nesta refatoração.
+administrativos sem autenticação.
 """
 from flask import Blueprint
+
+from src.middlewares.admin import require_admin
 
 
 def criar_blueprints(controllers):
@@ -12,6 +14,7 @@ def criar_blueprints(controllers):
     usuario = controllers["usuario"]
     pedido = controllers["pedido"]
     sistema = controllers["sistema"]
+    admin = controllers["admin"]
 
     produtos_bp = Blueprint("produtos", __name__)
     # /produtos/busca antes de /produtos/<int:id> para não competir na resolução.
@@ -55,4 +58,17 @@ def criar_blueprints(controllers):
         "/relatorios/vendas", "relatorio_vendas", sistema.relatorio_vendas, methods=["GET"]
     )
 
-    return (produtos_bp, usuarios_bp, pedidos_bp, sistema_bp)
+    admin_bp = Blueprint("admin", __name__)
+    # Rotas preservadas para não quebrar o contrato: /admin/reset-db segue funcionando (e pode
+    # exigir credencial via ADMIN_TOKEN) e /admin/query responde 410, explicando a retirada.
+    admin_bp.add_url_rule(
+        "/admin/reset-db",
+        "reset_db",
+        require_admin(admin.resetar_banco),
+        methods=["POST"],
+    )
+    admin_bp.add_url_rule(
+        "/admin/query", "query", admin.executar_query, methods=["POST"]
+    )
+
+    return (produtos_bp, usuarios_bp, pedidos_bp, sistema_bp, admin_bp)

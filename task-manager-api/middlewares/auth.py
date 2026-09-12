@@ -44,28 +44,58 @@ def _usuario_do_token():
     return usuario
 
 
+def _exigencia_ativa():
+    """A exigência de token é opcional por configuração (REQUIRE_AUTH).
+
+    Desligada (padrão), a API responde exatamente como antes da refatoração: o contrato
+    publicado é preservado e nenhum endpoint deixa de responder. Ligada, as rotas protegidas
+    passam a exigir token — e o token já é real e assinado nos dois modos.
+    """
+    return bool(current_app.config.get("REQUIRE_AUTH", False))
+
+
 def require_auth(fn):
-    """Exige um token válido. Disponibiliza o usuário autenticado em `g.usuario`."""
+    """Exige um token válido quando REQUIRE_AUTH está ligado.
+
+    Em ambos os modos, um token válido enviado na requisição identifica o usuário em
+    `g.usuario`; o que muda é apenas se a ausência do token bloqueia ou não.
+    """
 
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        g.usuario = _usuario_do_token()
+        if _exigencia_ativa():
+            g.usuario = _usuario_do_token()
+        else:
+            g.usuario = _usuario_do_token_se_houver()
         return fn(*args, **kwargs)
 
     return wrapper
 
 
 def require_admin(fn):
-    """Exige token válido de um usuário com papel de administrador."""
+    """Exige token de administrador quando REQUIRE_AUTH está ligado."""
 
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        g.usuario = _usuario_do_token()
-        if not g.usuario.is_admin():
-            raise ForbiddenError("Ação restrita a administradores")
+        if _exigencia_ativa():
+            g.usuario = _usuario_do_token()
+            if not g.usuario.is_admin():
+                raise ForbiddenError("Ação restrita a administradores")
+        else:
+            g.usuario = _usuario_do_token_se_houver()
         return fn(*args, **kwargs)
 
     return wrapper
+
+
+def _usuario_do_token_se_houver():
+    """Resolve o usuário quando há token válido; devolve None em vez de bloquear."""
+    if not request.headers.get("Authorization", "").startswith("Bearer "):
+        return None
+    try:
+        return _usuario_do_token()
+    except UnauthorizedError:
+        return None
 
 
 def optional_auth(fn):
@@ -77,13 +107,7 @@ def optional_auth(fn):
 
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        if request.headers.get("Authorization", "").startswith("Bearer "):
-            try:
-                g.usuario = _usuario_do_token()
-            except UnauthorizedError:
-                g.usuario = None
-        else:
-            g.usuario = None
+        g.usuario = _usuario_do_token_se_houver()
         return fn(*args, **kwargs)
 
     return wrapper

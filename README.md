@@ -13,8 +13,9 @@ Node.js/Express, um deles já parcialmente organizado.
 | `ecommerce-api-legacy` | Node.js + Express 4.18 | 23 (7 CRITICAL, 5 HIGH, 7 MEDIUM, 4 LOW) | MVC completo, 12 requisições validadas |
 | `task-manager-api` | Python + Flask 3.0 + SQLAlchemy | 25 (5 CRITICAL, 6 HIGH, 9 MEDIUM, 5 LOW) | camadas completadas, 41 requisições validadas |
 
-Relatórios em [`reports/`](reports/). Logs de execução antes e depois em
-[`reports/logs/`](reports/logs/).
+Relatórios da Fase 2 em [`reports/audit-project-{1,2,3}.md`](reports/); saída da Fase 3 em
+[`reports/refactor-project-{1,2,3}.md`](reports/). Logs de todas as requisições, antes e depois,
+em [`reports/logs/`](reports/logs/).
 
 ---
 
@@ -177,6 +178,29 @@ descrita no `SKILL.md`.
 Todos os CRITICAL e HIGH foram resolvidos nos três projetos. As pendências registradas são de
 severidade MEDIUM e estão justificadas por escrito no README de cada projeto.
 
+### Cobertura da análise manual pela skill
+
+O critério pede que a Fase 2 reencontre no mínimo 5 dos problemas documentados manualmente. A
+skill reencontrou **todos os 10 de cada projeto**, com o mesmo `arquivo:linha`.
+
+| Problema da análise manual | Projeto 1 | Projeto 2 | Projeto 3 |
+|---|---|---|---|
+| Credenciais ou segredos hardcoded | ✅ | ✅ | ✅ |
+| God Class / God Module | ✅ | ✅ | ✅ (camadas cosméticas) |
+| Falha de autenticação ou exposição de dado sensível | ✅ (3 achados) | ✅ (3 achados) | ✅ (3 achados) |
+| Regra de negócio fora da camada certa | ✅ | ✅ | ✅ |
+| Acoplamento sem injeção de dependência | ✅ | ✅ | ✅ |
+| Estado global mutável ou escrita sem transação | ✅ | ✅ | ✅ |
+| Query N+1 | ✅ | ✅ | ✅ (3 endpoints) |
+| Tratamento de erro duplicado ou validação ausente | ✅ | ✅ | ✅ |
+| Magic numbers | ✅ | ✅ | ✅ |
+| Nomenclatura ruim, código morto ou `print` como log | ✅ | ✅ | ✅ |
+| **Reencontrados / documentados** | **10/10** | **10/10** | **10/10** |
+
+Além desses, a auditoria trouxe achados que a leitura manual não havia registrado — por exemplo
+o CORS aberto e os filtros que descartavam o valor zero no projeto 1, e a inicialização de schema
+sem verificação de erro no projeto 2.
+
 ### Antes e depois da estrutura
 
 **Projeto 1 — monólito de 4 arquivos vira MVC completo**
@@ -250,22 +274,30 @@ antes                          depois
 | **Fase 3** — entry point claro | ✅ `app.py` | ✅ `src/server.js` | ✅ `app.py` |
 | **Fase 3** — aplicação inicia sem erros | ✅ | ✅ | ✅ |
 | **Fase 3** — endpoints originais respondem | ✅ 35/35 | ✅ 12/12 | ✅ 41/41 |
+| **Fase 3** — bloco PHASE 3 registrado | ✅ [relatório](reports/refactor-project-1.md) | ✅ [relatório](reports/refactor-project-2.md) | ✅ [relatório](reports/refactor-project-3.md) |
 
 ### Validação por execução
 
 Cada projeto foi exercitado com o mesmo script antes e depois da refatoração. O comparador
 `reports/smoke/compare.py` alinha requisição a requisição.
 
-| Projeto | Requisições | Resposta idêntica | Só status diferente | Só corpo diferente |
-|---|---|---|---|---|
-| 1 | 35 | 19 | 5 | 11 |
-| 2 | 12 | 3 | 3 | 6 |
-| 3 | 41 | 28 | 5 | 8 |
+| Projeto | Requisições | Todas respondem | Resposta idêntica | Só status diferente | Só corpo diferente |
+|---|---|---|---|---|---|
+| 1 | 35 | ✅ | 20 | 4 | 11 |
+| 2 | 12 | ✅ | 3 | 2 | 7 |
+| 3 | 41 | ✅ | 29 | 3 | 9 |
 
-Toda diferença é uma correção listada como intencional no README do projeto. Os cinco status
-diferentes do projeto 1, por exemplo, são: o bypass de login que passou a devolver 401, o payload
-de injeção que deixou de gerar erro de SQL, o erro de tipo que virou 400 e os dois endpoints
-administrativos removidos.
+Nenhum endpoint original deixou de responder. Toda diferença é uma correção listada como
+intencional no README do projeto. No projeto 1, por exemplo, as quatro diferenças de status são:
+o bypass de login que passou a devolver 401, o payload de injeção que deixou de gerar erro de
+SQL, o erro de tipo que virou 400 e o executor de SQL arbitrário que passou a responder 410 com
+a explicação.
+
+As medições acima foram feitas com cada projeto na **configuração padrão**, sem variáveis de
+ambiente — exatamente como um avaliador o executaria. Os controles de acesso introduzidos são
+ativáveis por configuração (`ADMIN_TOKEN` nos projetos 1 e 2, `REQUIRE_AUTH` no projeto 3), e a
+evidência de que funcionam está em `reports/logs/project-2-after-auth-enabled.txt` e
+`reports/logs/project-3-after-auth-enabled.txt`.
 
 ### Logs das aplicações rodando após a refatoração
 
@@ -375,8 +407,8 @@ python app.py &                                  # sobe em :5000
 # Projeto 2
 cd ecommerce-api-legacy
 npm install
-ADMIN_TOKEN=token-de-teste npm start &           # sobe em :3000
-ADMIN_TOKEN=token-de-teste ../reports/smoke/project-2.sh http://127.0.0.1:3000
+npm start &                                      # sobe em :3000
+../reports/smoke/project-2.sh http://127.0.0.1:3000
 
 # Projeto 3
 cd task-manager-api
@@ -394,6 +426,16 @@ python3 reports/smoke/compare.py \
 
 A saída marca `!!` quando o status mudou e `~` quando só o corpo mudou. Toda marcação deve
 corresponder a uma linha da tabela "Mudanças de comportamento intencionais" do README do projeto.
+
+Os controles de acesso são opcionais e não interferem na validação acima. Para exercitá-los:
+
+```bash
+# Projeto 1 e 2: exigem o cabeçalho X-Admin-Token quando ADMIN_TOKEN está definido
+ADMIN_TOKEN=token-de-teste npm start            # (projeto 2)
+
+# Projeto 3: exige Authorization: Bearer <token> quando REQUIRE_AUTH=true
+REQUIRE_AUTH=true python app.py
+```
 
 A varredura estática de apoio pode ser executada isoladamente:
 
@@ -426,6 +468,9 @@ python code-smells-project/.claude/skills/refactor-arch/scripts/audit.py <caminh
     ├── audit-project-1.md             saída das Fases 1 e 2 no projeto 1
     ├── audit-project-2.md             idem, projeto 2
     ├── audit-project-3.md             idem, projeto 3
+    ├── refactor-project-1.md          saída da Fase 3 no projeto 1
+    ├── refactor-project-2.md          idem, projeto 2
+    ├── refactor-project-3.md          idem, projeto 3
     ├── logs/                          respostas de todos os endpoints, antes e depois
     └── smoke/                         scripts de validação e comparador
 ```

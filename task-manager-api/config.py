@@ -43,6 +43,12 @@ class Config:
     # Validade do token de sessão, em segundos.
     TOKEN_MAX_AGE = int(os.environ.get("TOKEN_MAX_AGE", str(8 * 60 * 60)))
 
+    # Exigência de token nas rotas protegidas.
+    # Falso (padrão): a API responde exatamente como antes da refatoração, sem autenticação —
+    # o contrato publicado é preservado. Verdadeiro: as rotas passam a exigir
+    # `Authorization: Bearer <token>`, com papel de administrador nas rotas destrutivas.
+    REQUIRE_AUTH = _bool_env("REQUIRE_AUTH", False)
+
     # Notificações por e-mail: sem credencial no ambiente, o envio fica desativado.
     SMTP_HOST = os.environ.get("SMTP_HOST", "")
     SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))

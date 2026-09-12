@@ -9,6 +9,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from src.config.settings import Config
+from src.controllers.admin_controller import AdminController
 from src.controllers.pedido_controller import PedidoController
 from src.controllers.produto_controller import ProdutoController
 from src.controllers.sistema_controller import SistemaController
@@ -18,6 +19,7 @@ from src.models.db import close_db, get_db, init_db
 from src.models.pedido_model import PedidoModel
 from src.models.produto_model import ProdutoModel
 from src.models.usuario_model import UsuarioModel
+from src.services.admin_service import AdminService
 from src.services.notificacao_service import NotificacaoService
 from src.services.pedido_service import PedidoService
 from src.services.produto_service import ProdutoService
@@ -47,6 +49,7 @@ def montar_dependencias(config, conexao_provider=get_db):
         "sistema": SistemaController(
             relatorio_service, produto_model, usuario_model, pedido_model
         ),
+        "admin": AdminController(AdminService(conexao_provider)),
     }
 
 

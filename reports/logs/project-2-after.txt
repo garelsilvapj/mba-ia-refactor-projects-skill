@@ -1,0 +1,36 @@
+--- GET /api/admin/financial-report (com token)
+200
+[{"course":"Clean Architecture","revenue":997,"students":[{"student":"Leonan","paid":997}]},{"course":"Docker","revenue":0,"students":[]}]
+--- GET /api/admin/financial-report 
+401
+{"error":"Credencial de administrador inválida"}
+--- POST /api/checkout 
+200
+{"msg":"Sucesso","enrollment_id":2}
+--- POST /api/checkout 
+400
+{"error":"Pagamento recusado"}
+--- POST /api/checkout 
+200
+{"msg":"Sucesso","enrollment_id":3}
+--- POST /api/checkout 
+400
+{"error":"Bad Request"}
+--- POST /api/checkout 
+404
+{"error":"Curso não encontrado"}
+--- GET /api/admin/financial-report (com token)
+200
+[{"course":"Clean Architecture","revenue":997,"students":[{"student":"Leonan","paid":997}]},{"course":"Docker","revenue":994,"students":[{"student":"Guilherme","paid":497},{"student":"Leonan","paid":497}]}]
+--- DELETE /api/users/1 (com token)
+200
+{"removido":true,"id":1}
+--- DELETE /api/users/999 (com token)
+404
+{"error":"Usuário não encontrado"}
+--- GET /api/admin/financial-report (com token)
+200
+[{"course":"Clean Architecture","revenue":997,"students":[{"student":"Unknown","paid":997}]},{"course":"Docker","revenue":994,"students":[{"student":"Guilherme","paid":497},{"student":"Unknown","paid":497}]}]
+--- POST /api/checkout 
+401
+{"error":"Credenciais inválidas para o e-mail informado"}

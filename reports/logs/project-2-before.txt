@@ -1,0 +1,36 @@
+--- GET /api/admin/financial-report (com token)
+200
+[{"course":"Docker","revenue":0,"students":[]},{"course":"Clean Architecture","revenue":997,"students":[{"student":"Leonan","paid":997}]}]
+--- GET /api/admin/financial-report 
+200
+[{"course":"Docker","revenue":0,"students":[]},{"course":"Clean Architecture","revenue":997,"students":[{"student":"Leonan","paid":997}]}]
+--- POST /api/checkout 
+200
+{"msg":"Sucesso","enrollment_id":2}
+--- POST /api/checkout 
+400
+Pagamento recusado
+--- POST /api/checkout 
+200
+{"msg":"Sucesso","enrollment_id":3}
+--- POST /api/checkout 
+400
+Bad Request
+--- POST /api/checkout 
+404
+Curso não encontrado
+--- GET /api/admin/financial-report (com token)
+200
+[{"course":"Clean Architecture","revenue":997,"students":[{"student":"Leonan","paid":997}]},{"course":"Docker","revenue":994,"students":[{"student":"Guilherme","paid":497},{"student":"Leonan","paid":497}]}]
+--- DELETE /api/users/1 (com token)
+200
+Usuário deletado, mas as matrículas e pagamentos ficaram sujos no banco.
+--- DELETE /api/users/999 (com token)
+200
+Usuário deletado, mas as matrículas e pagamentos ficaram sujos no banco.
+--- GET /api/admin/financial-report (com token)
+200
+[{"course":"Clean Architecture","revenue":997,"students":[{"student":"Unknown","paid":997}]},{"course":"Docker","revenue":994,"students":[{"student":"Unknown","paid":497},{"student":"Guilherme","paid":497}]}]
+--- POST /api/checkout 
+200
+{"msg":"Sucesso","enrollment_id":4}

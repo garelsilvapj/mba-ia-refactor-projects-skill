@@ -1,0 +1,139 @@
+--- GET /
+200
+{"endpoints":{"health":"/health","login":"/login","pedidos":"/pedidos","produtos":"/produtos","relatorios":"/relatorios/vendas","usuarios":"/usuarios"},"mensagem":"Bem-vindo \u00e0 API da Loja","versao":"1.0.0"}
+
+--- GET /health
+200
+{"counts":{"pedidos":0,"produtos":10,"usuarios":3},"database":"connected","status":"ok","versao":"1.0.0"}
+
+--- GET /produtos
+200
+{"dados":[{"ativo":1,"categoria":"informatica","criado_em":"<TS>","descricao":"Notebook potente para jogos","estoque":10,"id":1,"nome":"Notebook Gamer","preco":5999.99},{"ativo":1,"categoria":"informatica","criado_em":"<TS>","descricao":"Mouse sem fio ergon\u00f4mico","estoque":50,"id":2,"nome":"Mouse Wireless","preco":89.9},{"ativo":1,"categoria":"informatica","criado_em":"<TS>","descricao":"Teclado mec\u00e2nico RGB","estoque":30,"id":3,"nome":"Teclado Mec\u00e2nico","preco":299.9},{"ativo":1,"categoria":"informatica","criado_em":"<TS>","descricao":"Monitor 27 polegadas 144hz","estoque":15,"id":4,"nome":"Monitor 27''","preco":1899.9},{"ativo":1,"categoria":"informatica","criado_em":"<TS>","descricao":"Headset com microfone","estoque":25,"id":5,"nome":"Headset Gamer","preco":199.9},{"ativo":1,"categoria":"moveis","criado_em":"<TS>","descricao":"Cadeira ergon\u00f4mica","estoque":8,"id":6,"nome":"Cadeira Gamer","preco":1299.9},{"ativo":1,"categoria":"informatica","criado_em":"<TS>","descricao":"Webcam 1080p","estoque":20,"id":7,"nome":"Webcam HD","preco":249.9},{"ativo":1,"categoria":"informatica","criado_em":"<TS>","descricao":"Hub USB 3.0 7 portas","estoque":40,"id":8,"nome":"Hub
+--- GET /produtos/busca?q=Mouse
+200
+{"dados":[{"ativo":1,"categoria":"informatica","criado_em":"<TS>","descricao":"Mouse sem fio ergon\u00f4mico","estoque":50,"id":2,"nome":"Mouse Wireless","preco":89.9}],"sucesso":true,"total":1}
+
+--- GET /produtos/busca?q=&categoria=moveis&preco_min=100&preco_max=2000
+200
+{"dados":[{"ativo":1,"categoria":"moveis","criado_em":"<TS>","descricao":"Cadeira ergon\u00f4mica","estoque":8,"id":6,"nome":"Cadeira Gamer","preco":1299.9}],"sucesso":true,"total":1}
+
+--- GET /produtos/busca?q=%27%20OR%201%3D1%20--
+200
+{"dados":[],"sucesso":true,"total":0}
+
+--- GET /produtos/1
+200
+{"dados":{"ativo":1,"categoria":"informatica","criado_em":"<TS>","descricao":"Notebook potente para jogos","estoque":10,"id":1,"nome":"Notebook Gamer","preco":5999.99},"sucesso":true}
+
+--- GET /produtos/9999
+404
+{"erro":"Produto n\u00e3o encontrado","sucesso":false}
+
+--- POST /produtos
+201
+{"dados":{"id":11},"mensagem":"Produto criado","sucesso":true}
+
+--- POST /produtos
+400
+{"erro":"Nome muito curto","sucesso":false}
+
+--- POST /produtos
+400
+{"erro":"Pre\u00e7o \u00e9 obrigat\u00f3rio","sucesso":false}
+
+--- POST /produtos
+400
+{"erro":"Pre\u00e7o deve ser num\u00e9rico","sucesso":false}
+
+--- PUT /produtos/11
+200
+{"mensagem":"Produto atualizado","sucesso":true}
+
+--- PUT /produtos/9999
+404
+{"erro":"Produto n\u00e3o encontrado","sucesso":false}
+
+--- DELETE /produtos/11
+200
+{"mensagem":"Produto deletado","sucesso":true}
+
+--- DELETE /produtos/9999
+404
+{"erro":"Produto n\u00e3o encontrado","sucesso":false}
+
+--- GET /usuarios
+200
+{"dados":[{"criado_em":"<TS>","email":"admin@loja.com","id":1,"nome":"Admin","tipo":"admin"},{"criado_em":"<TS>","email":"joao@email.com","id":2,"nome":"Jo\u00e3o Silva","tipo":"cliente"},{"criado_em":"<TS>","email":"maria@email.com","id":3,"nome":"Maria Santos","tipo":"cliente"}],"sucesso":true}
+
+--- GET /usuarios/1
+200
+{"dados":{"criado_em":"<TS>","email":"admin@loja.com","id":1,"nome":"Admin","tipo":"admin"},"sucesso":true}
+
+--- GET /usuarios/9999
+404
+{"erro":"Usu\u00e1rio n\u00e3o encontrado","sucesso":false}
+
+--- POST /usuarios
+201
+{"dados":{"id":4},"sucesso":true}
+
+--- POST /usuarios
+400
+{"erro":"Nome, email e senha s\u00e3o obrigat\u00f3rios","sucesso":false}
+
+--- POST /login
+200
+{"dados":{"email":"admin@loja.com","id":1,"nome":"Admin","tipo":"admin"},"mensagem":"Login OK","sucesso":true}
+
+--- POST /login
+401
+{"erro":"Email ou senha inv\u00e1lidos","sucesso":false}
+
+--- POST /login
+401
+{"erro":"Email ou senha inv\u00e1lidos","sucesso":false}
+
+--- POST /pedidos
+201
+{"dados":{"pedido_id":1,"total":479.7},"mensagem":"Pedido criado com sucesso","sucesso":true}
+
+--- POST /pedidos
+400
+{"erro":"Produto 9999 n\u00e3o encontrado","sucesso":false}
+
+--- POST /pedidos
+400
+{"erro":"Estoque insuficiente para Notebook Gamer","sucesso":false}
+
+--- POST /pedidos
+400
+{"erro":"Pedido deve ter pelo menos 1 item","sucesso":false}
+
+--- GET /pedidos
+200
+{"dados":[{"criado_em":"<TS>","id":1,"itens":[{"preco_unitario":89.9,"produto_id":2,"produto_nome":"Mouse Wireless","quantidade":2},{"preco_unitario":299.9,"produto_id":3,"produto_nome":"Teclado Mec\u00e2nico","quantidade":1}],"status":"pendente","total":479.7,"usuario_id":2}],"sucesso":true}
+
+--- GET /pedidos/usuario/2
+200
+{"dados":[{"criado_em":"<TS>","id":1,"itens":[{"preco_unitario":89.9,"produto_id":2,"produto_nome":"Mouse Wireless","quantidade":2},{"preco_unitario":299.9,"produto_id":3,"produto_nome":"Teclado Mec\u00e2nico","quantidade":1}],"status":"pendente","total":479.7,"usuario_id":2}],"sucesso":true}
+
+--- PUT /pedidos/1/status
+200
+{"mensagem":"Status atualizado","sucesso":true}
+
+--- PUT /pedidos/1/status
+400
+{"erro":"Status inv\u00e1lido","sucesso":false}
+
+--- GET /relatorios/vendas
+200
+{"dados":{"desconto_aplicavel":0,"faturamento_bruto":479.7,"faturamento_liquido":479.7,"pedidos_aprovados":1,"pedidos_cancelados":0,"pedidos_pendentes":0,"ticket_medio":479.7,"total_pedidos":1},"sucesso":true}
+
+--- POST /admin/query
+404
+{"erro":"Rota n\u00e3o encontrada","sucesso":false}
+
+--- POST /admin/reset-db
+404
+{"erro":"Rota n\u00e3o encontrada","sucesso":false}
+
